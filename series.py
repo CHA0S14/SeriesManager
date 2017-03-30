@@ -14,9 +14,9 @@ import sys
 #####################
 
 #Ruta a la carpeta con las series
-seriesPath = r"C:\Users\ismae\ownCloud\Series"
+seriesPath = r"<path a series>"
 #ruta al programa con el que quieres reproducir
-reproductor = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
+reproductor = r"<path a reproductor>"
 #Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
 carpetas = [
         fichero for fichero in listdir(seriesPath)
