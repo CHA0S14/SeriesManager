@@ -9,15 +9,22 @@ import sys
 #		LEE EL README DE GITHUB ANTES DE USAR:	https://github.com/CHA0S14/SeriesManager.git		#
 #################################################################################################################
 
+#####################
+#VARIABLES GLOBALES #
+#####################
+
 #Ruta a la carpeta con las series
 seriesPath = r"C:\Users\ismae\ownCloud\Series"
 #ruta al programa con el que quieres reproducir
 reproductor = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
-
 #Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
 carpetas = [
         fichero for fichero in listdir(seriesPath)
         if isdir(join(seriesPath, fichero))]
+
+#####################
+#   FUNCIONES       #
+#####################
 
 #Imprimo y pregunto por que serie quieres ver. ademas se puede pasar directamente por comandos como un argumento si gustas
 def impSerie():
@@ -40,6 +47,11 @@ def comprobarAperturaCarpeta(serie):
 	system('start ' + seriesPath)
 	exit()
 
+
+#####################
+#       INICIO      #
+#####################
+
 if len(sys.argv) < 2:
     serie = impSerie()
 else:
@@ -47,7 +59,7 @@ else:
 
 comprobarAperturaCarpeta(serie)
 
-#consigo que seriesPath apunte a la carpeta de la serie a ver
+#consigo que seriePath apunte a la carpeta de la serie a ver
 seriePath = join(seriesPath,carpetas[serie])
 
 #while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
@@ -83,7 +95,7 @@ Opcion: """)
     elif accion == 3:
         serie = impSerie()
         comprobarAperturaCarpeta(serie)
-        #consigo que seriesPath apunte a la carpeta de la serie a ver
+        #consigo que seriePath apunte a la carpeta de la serie a ver
         seriePath = join(seriesPath,carpetas[serie])
     elif accion == 4:
         continua = False
@@ -97,4 +109,3 @@ if len(delSchedule) > 0:
     if len(listdir(seriesPath)) == 0:
 	rmdir(seriesPath)
 print("BYE")
-   
