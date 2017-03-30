@@ -1,5 +1,8 @@
 # SeriesManager
-Scrip muy sencillo en python para gestionar las series descargadas en una carpeta
+
+Este es uno de mis primeros scripts en python asi que no me manejo muy comodamente, siento si algo no es tecnicamente correcto, si algo esta mal ayudadme a mejorar!
+
+Este es un scrip muy sencillo en python para gestionar las series descargadas en una carpeta
 
 Para usarlo tienes que tener una carpeta que dentro va ha tener una carpeta por cada serie.
 
