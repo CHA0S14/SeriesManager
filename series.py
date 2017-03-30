@@ -6,7 +6,7 @@ import sys
 #Ruta a la carpeta con las series
 seriesPath = r"D:\Owncloud\Series"
 #ruta al programa con el que quieres reproducir
-vlc = r"D:\Programas\VLC\vlc.exe"
+reproductor = r"D:\Programas\VLC\vlc.exe"
 
 #Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
 carpetas = [
@@ -43,7 +43,7 @@ cap = 0
 delSchedule = []
 while continua:
     capitulo = join(seriesPath,listdir(seriesPath)[cap])
-    subprocess.call([vlc,capitulo])
+    subprocess.call([reproductor,capitulo])
     
     print("Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
     delete = str(raw_input()) 
