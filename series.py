@@ -21,7 +21,14 @@ def impSerie():
         cont = cont + 1
 
     print("Que serie quieres ver? n de serie:")
-    return int(input()) - 1
+
+    serie = int(input()) - 1
+
+    #Si quieres abrir la carpeta para aniadir una serie o algo la opcion 0 activa esto
+    if serie == -1:
+	system('start ' + seriesPath)
+	exit()
+    return serie
 
 #Ruta a la carpeta con las series
 seriesPath = r"C:\Users\ismae\ownCloud\Series"
@@ -37,11 +44,6 @@ if len(sys.argv) < 2:
     serie = impSerie()
 else:
     serie = int(sys.argv[1]) - 1
-	
-#Si quieres abrir la carpeta para aniadir una serie o algo la opcion 0 activa esto
-if serie == -1:
-	system('start ' + seriesPath)
-	exit()
 
 #consigo que seriesPath apunte a la carpeta de la serie a ver
 seriePath = join(seriesPath,carpetas[serie])
@@ -56,10 +58,14 @@ while continua:
     capitulo = join(seriePath,listdir(seriePath)[cap])
     subprocess.call([reproductor,capitulo])
     
+    #comprobacion de si se quiere eliminar el archivo una vez visto
     print("Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
     delete = str(raw_input()) 
     if delete == "S" or delete == "s":
+        #se aniade el archivo al array para borrarlo despues
         delSchedule.append(capitulo)
+
+    #segunda tanda de opciones ha realizar
     print("""Que quieres hacer?
 	1. Siguiente cap
 	2. Anterior cap
@@ -73,7 +79,8 @@ Opcion: """)
     elif accion == 2:
         cap -= 1
     elif accion == 3:
-        serie = impSerie()        
+        serie = impSerie()
+        
         #consigo que seriesPath apunte a la carpeta de la serie a ver
         seriePath = join(seriesPath,carpetas[serie])
     elif accion == 4:
@@ -88,4 +95,3 @@ if len(delSchedule) > 0:
     if len(listdir(seriesPath)) == 0:
 	rmdir(seriesPath)
 print("BYE")
-    
