@@ -85,7 +85,7 @@ if len(delSchedule) > 0:
     for archivo in delSchedule:
         print(archivo)
         remove(archivo)
-	if len(listdir(seriesPath)) == 0:
-		rmdir(seriesPath)
+    if len(listdir(seriesPath)) == 0:
+	rmdir(seriesPath)
 print("BYE")
     
