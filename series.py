@@ -28,12 +28,12 @@ if len(sys.argv) < 2:
         print "\t" + str(cont) + ". " + carpeta
         cont = cont + 1
 
-    print("Que serie quieres ver? nº de serie:")
+    print("Que serie quieres ver? n de serie:")
     serie = int(input()) - 1
 else:
     serie = int(sys.argv[1]) - 1
 	
-#Si quieres abrir la carpeta para añadir una serie o algo la opcion 0 activa esto
+#Si quieres abrir la carpeta para aniadir una serie o algo la opcion 0 activa esto
 if serie == -1:
 	system('start ' + seriesPath)
 	exit()
