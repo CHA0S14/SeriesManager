@@ -9,6 +9,15 @@ import sys
 #		LEE EL README DE GITHUB ANTES DE USAR:	https://github.com/CHA0S14/SeriesManager.git		#
 #################################################################################################################
 
+#Ruta a la carpeta con las series
+seriesPath = r"C:\Users\ismae\ownCloud\Series"
+#ruta al programa con el que quieres reproducir
+reproductor = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
+
+#Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
+carpetas = [
+        fichero for fichero in listdir(seriesPath)
+        if isdir(join(seriesPath, fichero))]
 
 #Imprimo y pregunto por que serie quieres ver. ademas se puede pasar directamente por comandos como un argumento si gustas
 def impSerie():
@@ -22,28 +31,21 @@ def impSerie():
 
     print("Que serie quieres ver? n de serie:")
 
-    serie = int(input()) - 1
+    return int(input()) - 1
 
+
+def comprobarAperturaCarpeta(serie):
     #Si quieres abrir la carpeta para aniadir una serie o algo la opcion 0 activa esto
     if serie == -1:
 	system('start ' + seriesPath)
 	exit()
-    return serie
-
-#Ruta a la carpeta con las series
-seriesPath = r"C:\Users\ismae\ownCloud\Series"
-#ruta al programa con el que quieres reproducir
-reproductor = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
-
-#Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
-carpetas = [
-        fichero for fichero in listdir(seriesPath)
-        if isdir(join(seriesPath, fichero))]
 
 if len(sys.argv) < 2:
     serie = impSerie()
 else:
     serie = int(sys.argv[1]) - 1
+
+comprobarAperturaCarpeta(serie)
 
 #consigo que seriesPath apunte a la carpeta de la serie a ver
 seriePath = join(seriesPath,carpetas[serie])
@@ -80,7 +82,7 @@ Opcion: """)
         cap -= 1
     elif accion == 3:
         serie = impSerie()
-        
+        comprobarAperturaCarpeta(serie)
         #consigo que seriesPath apunte a la carpeta de la serie a ver
         seriePath = join(seriesPath,carpetas[serie])
     elif accion == 4:
@@ -95,3 +97,4 @@ if len(delSchedule) > 0:
     if len(listdir(seriesPath)) == 0:
 	rmdir(seriesPath)
 print("BYE")
+   
