@@ -59,7 +59,6 @@ def comprobarAperturaCarpeta(serie):
 	system('start ' + seriesPath)
 	exit()
 
-
 #####################
 #       INICIO      #
 #####################
@@ -89,11 +88,12 @@ while continua:
     subprocess.call([reproductor,capitulo])
     
     #comprobacion de si se quiere eliminar el archivo una vez visto
-    print("Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
-    delete = str(raw_input()) 
-    if delete == "S" or delete == "s":
-        #se aniade el archivo al array para borrarlo despues
-        delSchedule.append(capitulo)
+    if capitulo not in delSchedule:
+        print("Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
+        delete = str(raw_input()) 
+        if delete == "S" or delete == "s":
+            #se aniade el archivo al array para borrarlo despues
+            delSchedule.append(capitulo)
 
     #segunda tanda de opciones ha realizar
     print("""Que quieres hacer?
@@ -106,9 +106,19 @@ Opcion: """)
 
     accion = int(input())
     if accion == 1:
-        cap += 1
+        #si esta apuntado al primer elemento con un indice negativo o el array solo tiene un elemento y el indice es -1 haciendo que 0 y -1
+        #apuntan al mismo sitio no quedaran capitulos y se reproducira el ultimo
+        if cap + 1 == len(caps) or (cap == 0 and len(caps) == 1):
+            print("no hay mas capitulos se reproducira el ultimo")
+        else:
+            cap += 1
     elif accion == 2:
-        cap -= 1
+        #si esta apuntado al primer elemento con un indice negativo o el array solo tiene un elemento y el indice es 0 haciendo que 0 y -1
+        #apuntan al mismo sitio no quedaran capitulos y se reproducira el primero
+        if cap - 1 < len(caps) * -1 or (len(caps) == 1 and cap == 0):
+            print ("no hay mas capitulos se reproducira el primero")
+        else:
+            cap -= 1
     elif accion == 3:
         cap = impArray(CAP_INI, CAP_FIN, caps)        
     elif accion == 4:
@@ -126,6 +136,6 @@ if len(delSchedule) > 0:
     for archivo in delSchedule:
         print(archivo)
         remove(archivo)
-    if len(listdir(seriesPath)) == 0:
-	rmdir(seriesPath)
+    if len(listdir(seriePath)) == 0:
+	rmdir(seriePath)
 print("BYE")
