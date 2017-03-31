@@ -94,6 +94,12 @@ while continua:
         if delete == "S" or delete == "s":
             #se aniade el archivo al array para borrarlo despues
             delSchedule.append(capitulo)
+    else:
+        print("Quieres evitar la eliminacion del archivo?[S/s]")
+        delete = str(raw_input()) 
+        if delete == "S" or delete == "s":
+            #se quita el archivo al array para no borrarlo despues
+            delSchedule.remove(capitulo)
 
     #segunda tanda de opciones ha realizar
     print("""Que quieres hacer?
