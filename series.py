@@ -18,28 +18,40 @@ seriesPath = r"<path a series>"
 #ruta al programa con el que quieres reproducir
 reproductor = r"<path a reproductor>"
 #Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
-carpetas = [
+series = [
         fichero for fichero in listdir(seriesPath)
         if isdir(join(seriesPath, fichero))]
+
+#Mensajes series
+SERIE_INI = "Series disponibles:"
+SERIE_FIN = "Que serie quieres ver? n de serie:"
+SERIE_ADD = ["Abrir carpeta"]
+
+#Mensajes caps
+CAP_INI = "Capitulos disponibles"
+CAP_FIN = "Que capitulo quieres ver? n de cap:"
 
 #####################
 #   FUNCIONES       #
 #####################
 
 #Imprimo y pregunto por que serie quieres ver. ademas se puede pasar directamente por comandos como un argumento si gustas
-def impSerie():
-    print("Series disponibles:")
-    print("\t0. Abrir carpeta")
-    
-    cont = 1
-    for carpeta in carpetas:
-        print "\t" + str(cont) + ". " + carpeta
+def impArray(mensajeIni, mensajeFin, array, opcionAd = []):
+    print(mensajeIni)
+
+    cont = 0
+    for opcion in opcionAd:
+        print "\t" + str(cont) + ". " + opcion
+        cont = cont +1
+
+    cont = 1 if cont == 0 else cont
+    for elem in array:
+        print "\t" + str(cont) + ". " + elem
         cont = cont + 1
 
-    print("Que serie quieres ver? n de serie:")
+    print(mensajeFin)
 
     return int(input()) - 1
-
 
 def comprobarAperturaCarpeta(serie):
     #Si quieres abrir la carpeta para aniadir una serie o algo la opcion 0 activa esto
@@ -53,14 +65,14 @@ def comprobarAperturaCarpeta(serie):
 #####################
 
 if len(sys.argv) < 2:
-    serie = impSerie()
+    serie = impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)
 else:
     serie = int(sys.argv[1]) - 1
 
 comprobarAperturaCarpeta(serie)
 
 #consigo que seriePath apunte a la carpeta de la serie a ver
-seriePath = join(seriesPath,carpetas[serie])
+seriePath = join(seriesPath,series[serie])
 
 #while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
 continua = True
@@ -68,8 +80,12 @@ cap = 0
 
 #array que va guardando los capitulos que has decidido borrar al final de la ejecucion
 delSchedule = []
+
+#caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
+#y se actualizara solo cuando se llame a cambiar serie
+caps = listdir(seriePath)
 while continua:
-    capitulo = join(seriePath,listdir(seriePath)[cap])
+    capitulo = join(seriePath,caps[cap])
     subprocess.call([reproductor,capitulo])
     
     #comprobacion de si se quiere eliminar el archivo una vez visto
@@ -83,8 +99,9 @@ while continua:
     print("""Que quieres hacer?
 	1. Siguiente cap
 	2. Anterior cap
-	3. Cambiar serie
-	4. Salir
+	3. Elegir cap
+	4. Cambiar serie
+	5. Salir
 Opcion: """)
 
     accion = int(input())
@@ -93,11 +110,14 @@ Opcion: """)
     elif accion == 2:
         cap -= 1
     elif accion == 3:
-        serie = impSerie()
+        cap = impArray(CAP_INI, CAP_FIN, caps)        
+    elif accion == 4:
+        serie = impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)
         comprobarAperturaCarpeta(serie)
         #consigo que seriePath apunte a la carpeta de la serie a ver
-        seriePath = join(seriesPath,carpetas[serie])
-    elif accion == 4:
+        seriePath = join(seriesPath,series[serie])
+        caps = listdir(seriePath)
+    elif accion == 5:
         continua = False
 
 #for que se encarga de borrar los archivos que indica el array delSchedule
