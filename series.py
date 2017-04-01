@@ -27,6 +27,10 @@ SERIE_INI = "Series disponibles:"
 SERIE_FIN = "Que serie quieres ver? n de serie:"
 SERIE_ADD = ["Abrir carpeta"]
 
+#Mensajes temporadas
+TEMP_INI = "Temporadas disponibles:"
+TEMP_FIN = "Que temporada quieres ver? n de temp:"
+
 #Mensajes caps
 CAP_INI = "Capitulos disponibles"
 CAP_FIN = "Que capitulo quieres ver? n de cap:"
@@ -35,15 +39,17 @@ CAP_FIN = "Que capitulo quieres ver? n de cap:"
 #   FUNCIONES       #
 #####################
 
-#Imprimo y pregunto por que serie quieres ver. ademas se puede pasar directamente por comandos como un argumento si gustas
+#Recorre un array con las opciones para que el usuario tome una decision
 def impArray(mensajeIni, mensajeFin, array, opcionAd = []):
     print(mensajeIni)
 
+    #recorre las opciones adicionales que van a parte del array de series o capitulos
     cont = 0
     for opcion in opcionAd:
         print "\t" + str(cont) + ". " + opcion
         cont = cont +1
 
+    #recorre el array con las series o capitulos
     cont = 1 if cont == 0 else cont
     for elem in array:
         print "\t" + str(cont) + ". " + elem
@@ -59,6 +65,18 @@ def comprobarAperturaCarpeta(serie):
 	system('start ' + seriesPath)
 	exit()
 
+#Este metodo se encarda de comprobar si hay temporadas y dar a elegir cual quieres ver
+def comprobarTemporada(seriePath):
+    print seriePath
+    elementos = listdir(seriePath)
+    if isdir(join(seriePath,elementos[0])):
+        temp = impArray(TEMP_INI,TEMP_FIN,elementos)
+        seriePath = join(seriePath,elementos[temp])
+        elementos = listdir(seriePath)
+    
+    return (seriePath,elementos)
+
+
 #####################
 #       INICIO      #
 #####################
@@ -70,8 +88,10 @@ else:
 
 comprobarAperturaCarpeta(serie)
 
-#consigo que seriePath apunte a la carpeta de la serie a ver
-seriePath = join(seriesPath,series[serie])
+#consigo que seriePath apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
+#caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
+#y se actualizara solo cuando se llame a cambiar serie
+(seriePath, caps) = comprobarTemporada(join(seriesPath,series[serie]))
 
 #while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
 continua = True
@@ -80,9 +100,6 @@ cap = 0
 #array que va guardando los capitulos que has decidido borrar al final de la ejecucion
 delSchedule = []
 
-#caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
-#y se actualizara solo cuando se llame a cambiar serie
-caps = listdir(seriePath)
 while continua:
     capitulo = join(seriePath,caps[cap])
     subprocess.call([reproductor,capitulo])
@@ -128,11 +145,13 @@ Opcion: """)
     elif accion == 3:
         cap = impArray(CAP_INI, CAP_FIN, caps)        
     elif accion == 4:
+        cap = 0
         serie = impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)
         comprobarAperturaCarpeta(serie)
-        #consigo que seriePath apunte a la carpeta de la serie a ver
-        seriePath = join(seriesPath,series[serie])
-        caps = listdir(seriePath)
+        #consigo que seriePath apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
+        #caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
+        #y se actualizara solo cuando se llame a cambiar serie
+        (seriePath, caps) = comprobarTemporada(join(seriesPath,series[serie]))
     elif accion == 5:
         continua = False
 
