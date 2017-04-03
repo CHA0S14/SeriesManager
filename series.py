@@ -67,14 +67,25 @@ def comprobarAperturaCarpeta(serie):
 
 #Este metodo se encarda de comprobar si hay temporadas y dar a elegir cual quieres ver
 def comprobarTemporada(seriePath):
-    print seriePath
     elementos = listdir(seriePath)
     if isdir(join(seriePath,elementos[0])):
         temp = impArray(TEMP_INI,TEMP_FIN,elementos)
         seriePath = join(seriePath,elementos[temp])
-        elementos = listdir(seriePath)
-    
+        elementos = listdir(seriePath)    
     return (seriePath,elementos)
+
+def eliminarCaps(delSchedule,serePath):
+    #for que se encarga de borrar los archivos que indica el array delSchedule
+    print "Se van a eliminar los archivos planificados"
+    if len(delSchedule) > 0:
+        for archivo in delSchedule:
+            print "eliminadno " + archivo + "..."
+            sleep(0.5)
+            remove(archivo)
+        if len(listdir(seriePath)) == 0:
+            print "No quedan capitulos eliminando carpeta..."
+            sleep(1)
+            rmdir(seriePath)
 
 
 #####################
@@ -102,6 +113,7 @@ delSchedule = []
 
 while continua:
     capitulo = join(seriePath,caps[cap])
+    print "Reproduciendo " + caps[cap] + "..."
     subprocess.call([reproductor,capitulo])
     
     #comprobacion de si se quiere eliminar el archivo una vez visto
@@ -119,13 +131,13 @@ while continua:
             delSchedule.remove(capitulo)
 
     #segunda tanda de opciones ha realizar
-    print("""Que quieres hacer?
-	1. Siguiente cap
-	2. Anterior cap
-	3. Elegir cap
+    print "Que quieres hacer?:"
+    print "\t1. Siguiente cap -> " + (caps[cap+1] if cap < len(caps) - 1 else caps[cap])
+    print "\t2. Anterior cap  -> " + (caps[cap-1] if cap > 0 else caps[cap])
+    print """\t3. Elegir cap
 	4. Cambiar serie
 	5. Salir
-Opcion: """)
+Opcion: """
 
     accion = int(input())
     if accion == 1:
@@ -145,6 +157,12 @@ Opcion: """)
     elif accion == 3:
         cap = impArray(CAP_INI, CAP_FIN, caps)        
     elif accion == 4:
+        #se eliminaran los capitulos planificados
+        eliminarCaps(delSchedule,seriePath)
+        delSchedule = []
+        #se actualiza las series disponibles
+        series = [fichero for fichero in listdir(seriesPath)
+                    if isdir(join(seriesPath, fichero))]
         cap = 0
         serie = impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)
         comprobarAperturaCarpeta(serie)
@@ -155,12 +173,7 @@ Opcion: """)
     elif accion == 5:
         continua = False
 
-#for que se encarga de borrar los archivos que indica el array delSchedule
-if len(delSchedule) > 0:
-    print("eliminando archivos")
-    for archivo in delSchedule:
-        print(archivo)
-        remove(archivo)
-    if len(listdir(seriePath)) == 0:
-	rmdir(seriePath)
+#Se eliminaran los capitulos planificados
+eliminarCaps(delSchedule,seriePath)
 print("BYE")
+sleep(1)
