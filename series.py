@@ -22,6 +22,13 @@ series = [
         fichero for fichero in listdir(seriesPath)
         if isdir(join(seriesPath, fichero))]
 
+#####################
+#     Constantes    #
+#####################
+
+#Tiempo de espera al siguiente cap
+TIEMPO_ESPERA = 5
+
 #Mensajes series
 SERIE_INI = "Series disponibles:"
 SERIE_FIN = "Que serie quieres ver? n de serie:"
@@ -34,6 +41,22 @@ TEMP_FIN = "Que temporada quieres ver? n de temp:"
 #Mensajes caps
 CAP_INI = "Capitulos disponibles"
 CAP_FIN = "Que capitulo quieres ver? n de cap:"
+
+#Acciones tras reproduccion
+ACC_INI = 'Que quieres hacer?:'    
+ACC_FIN = 'Opcion:'
+
+#Posibilidades de eliminar
+DEL_INI = 'Que quieres eliminar?:'
+DEL_ARRAY = ['Eliminar todos los capitulos vistos',
+             'Eliminar todo menos el ultimo',
+             'Elegir cuales eliminar',
+             'No eliminar ninguno']
+DEL_FIN = 'Opcion:'
+
+#Seleccion de caps a borrar
+SELD_INI = 'Capitulos a borrar:'
+SELD_FIN = 'Escribe el numero de los caps separados con coma'
 
 #####################
 #   FUNCIONES       #
@@ -56,8 +79,7 @@ def impArray(mensajeIni, mensajeFin, array, opcionAd = []):
         cont = cont + 1
 
     print(mensajeFin)
-
-    return int(input()) - 1
+    return input()
 
 def comprobarAperturaCarpeta(serie):
     #Si quieres abrir la carpeta para aniadir una serie o algo la opcion 0 activa esto
@@ -69,23 +91,28 @@ def comprobarAperturaCarpeta(serie):
 def comprobarTemporada(seriePath):
     elementos = listdir(seriePath)
     if isdir(join(seriePath,elementos[0])):
-        temp = impArray(TEMP_INI,TEMP_FIN,elementos)
+        temp = int(impArray(TEMP_INI,TEMP_FIN,elementos)) - 1
         seriePath = join(seriePath,elementos[temp])
         elementos = listdir(seriePath)    
     return (seriePath,elementos)
 
 def eliminarCaps(delSchedule,serePath):
     #for que se encarga de borrar los archivos que indica el array delSchedule
-    print "Se van a eliminar los archivos planificados"
     if len(delSchedule) > 0:
+        print "Se van a eliminar los archivos planificados"
         for archivo in delSchedule:
             print "eliminadno " + archivo + "..."
-            sleep(0.5)
+            time.sleep(0.5)
             remove(archivo)
         if len(listdir(seriePath)) == 0:
             print "No quedan capitulos eliminando carpeta..."
-            sleep(1)
+            time.sleep(1)
             rmdir(seriePath)
+
+#hilo para leer si se quiere cortar la reproduccion automatica
+def input_thread(L):
+    raw_input()
+    L.append(None)
 
 
 #####################
@@ -93,7 +120,7 @@ def eliminarCaps(delSchedule,serePath):
 #####################
 
 if len(sys.argv) < 2:
-    serie = impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)
+    serie = int(impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)) - 1
 else:
     serie = int(sys.argv[1]) - 1
 
@@ -108,54 +135,93 @@ comprobarAperturaCarpeta(serie)
 continua = True
 cap = 0
 
+#array que guarda los capitulos vistos en reproduccion automatica
+vistos = []
+
 #array que va guardando los capitulos que has decidido borrar al final de la ejecucion
 delSchedule = []
+
 
 while continua:
     capitulo = join(seriePath,caps[cap])
     print "Reproduciendo " + caps[cap] + "..."
     subprocess.call([reproductor,capitulo])
+    vistos.append(capitulo)
+
+    #inicio del contador para reproduccion automatica
+    inp = None
+            
+    for i in range(TIEMPO_ESPERA,0,-1):
+        if msvcrt.kbhit():
+            inp = msvcrt.getch()
+            break
+        print 'Finalizado el siguiente capitulo empezara en %d sec, presiona enter para parar: \r' % i,
+        sys.stdout.flush()
+        time.sleep(1)
+
+    if not inp:
+        print 'Finalizado el siguiente capitulo empezara en 0 sec, presiona enter para parar: '
+        cap += 1
+        continue
     
-    #comprobacion de si se quiere eliminar el archivo una vez visto
-    if capitulo not in delSchedule:
-        print("Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
-        delete = str(raw_input()) 
-        if delete == "S" or delete == "s":
-            #se aniade el archivo al array para borrarlo despues
-            delSchedule.append(capitulo)
+    #comprobacion de si se quieren eliminar los archivos una vez vistos
+    if len(vistos) == 1:
+        if capitulo not in delSchedule:
+            print("\nQuieres eliminar el archivo? (se eliminaran al final)[S/s]")
+            delete = str(raw_input()) 
+            if delete == "S" or delete == "s":
+                #se aniade el archivo al array para borrarlo despues
+                delSchedule.append(capitulo)
+        else:
+            print("\nQuieres evitar la eliminacion del archivo?[S/s]")
+            delete = str(raw_input()) 
+            if delete == "S" or delete == "s":
+                #se quita el archivo al array para no borrarlo despues
+                delSchedule.remove(capitulo)
     else:
-        print("Quieres evitar la eliminacion del archivo?[S/s]")
-        delete = str(raw_input()) 
-        if delete == "S" or delete == "s":
-            #se quita el archivo al array para no borrarlo despues
-            delSchedule.remove(capitulo)
+        eliminar = int(impArray(DEL_INI,DEL_FIN,DEL_ARRAY))
+        
+        #eliminar todos
+        if eliminar == 1:            
+            delSchedule = list(set(delSchedule)|set(vistos))
+        #eliminar todos menos el ultimo
+        elif eliminar == 2:
+            delSchedule = list(set(delSchedule)|set(vistos[0:-1]))
+        #elegir los que eliminar
+        elif eliminar == 3:
+            elementos = impArray(SELD_INI,SELD_FIN,vistos[1:],[vistos[0]])
+            if type(elementos) is tuple:
+                vistosAux = vistos
+                vistos = []
+                for element in elementos:
+                    vistos.append(vistosAux[element])
+            else:
+                vistos = [vistos[elementos]]
+            delSchedule = list(set(delSchedule)|set(vistos))
+
+    vistos = []
+    
+    
 
     #segunda tanda de opciones ha realizar
-    print "Que quieres hacer?:"
-    print "\t1. Siguiente cap -> " + (caps[cap+1] if cap < len(caps) - 1 else caps[cap])
-    print "\t2. Anterior cap  -> " + (caps[cap-1] if cap > 0 else caps[cap])
-    print """\t3. Elegir cap
-	4. Cambiar serie
-	5. Salir
-Opcion: """
+    acciones = ["Siguiente cap -> " + (caps[cap+1] if cap < len(caps) - 1 else caps[cap]),
+                "Anterior cap  -> " + (caps[cap-1] if cap > 0 else caps[cap]),
+                "Elegir cap",
+                "Cambiar serie",
+                "Salir"]
+    
 
-    accion = int(input())
+    accion = int(impArray(ACC_INI,ACC_FIN,acciones))
+    #siguiente capitulo
     if accion == 1:
-        #si esta apuntado al primer elemento con un indice negativo o el array solo tiene un elemento y el indice es -1 haciendo que 0 y -1
-        #apuntan al mismo sitio no quedaran capitulos y se reproducira el ultimo
-        if cap + 1 == len(caps) or (cap == 0 and len(caps) == 1):
-            print("no hay mas capitulos se reproducira el ultimo")
-        else:
+        if not cap < len(caps):
             cap += 1
+    #anterior capitulo
     elif accion == 2:
-        #si esta apuntado al primer elemento con un indice negativo o el array solo tiene un elemento y el indice es 0 haciendo que 0 y -1
-        #apuntan al mismo sitio no quedaran capitulos y se reproducira el primero
-        if cap - 1 < len(caps) * -1 or (len(caps) == 1 and cap == 0):
-            print ("no hay mas capitulos se reproducira el primero")
-        else:
+        if not cap > 0:
             cap -= 1
     elif accion == 3:
-        cap = impArray(CAP_INI, CAP_FIN, caps)        
+        cap = int(impArray(CAP_INI, CAP_FIN, caps)) - 1        
     elif accion == 4:
         #se eliminaran los capitulos planificados
         eliminarCaps(delSchedule,seriePath)
@@ -164,7 +230,7 @@ Opcion: """
         series = [fichero for fichero in listdir(seriesPath)
                     if isdir(join(seriesPath, fichero))]
         cap = 0
-        serie = impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)
+        serie = int(impArray(SERIE_INI, SERIE_FIN, series, SERIE_ADD)) - 1
         comprobarAperturaCarpeta(serie)
         #consigo que seriePath apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
         #caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
@@ -176,4 +242,4 @@ Opcion: """
 #Se eliminaran los capitulos planificados
 eliminarCaps(delSchedule,seriePath)
 print("BYE")
-sleep(1)
+time.sleep(1)
