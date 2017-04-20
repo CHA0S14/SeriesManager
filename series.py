@@ -114,6 +114,23 @@ def input_thread(L):
     raw_input()
     L.append(None)
 
+#Contador que si no se detiene devuelve None si se detiene devuelve otra cosa
+def counter(tiempo, mensaje):
+    inp = None
+    for i in range(tiempo,0,-1):
+        if msvcrt.kbhit():
+            inp = msvcrt.getch()
+            break
+        print mensaje + ' %d sec, presiona algo para parar: \r' % i,
+        sys.stdout.flush()
+        time.sleep(1)
+    if not inp:
+        print mensaje + ' 0 sec:                             '
+    else:
+        #con estre print evito superposiciones de texto
+        print ''
+    return inp
+
 
 #####################
 #       INICIO      #
@@ -141,39 +158,39 @@ vistos = []
 #array que va guardando los capitulos que has decidido borrar al final de la ejecucion
 delSchedule = []
 
+#booleana por si se quiere apagar el ordena
+apagar = False
+
 
 while continua:
     capitulo = join(seriePath,caps[cap])
     print "Reproduciendo " + caps[cap] + "..."
-    subprocess.call([reproductor,capitulo])
+    subprocess.call([reproductor,'--fullscreen',capitulo])
+
+    if apagar:
+        if not counter(10, 'El ordenador se apagara en'):
+            eliminarCaps(delSchedule,seriePath)
+            subprocess.call("shutdown -s -t 0")
+        else:
+            apagar = False
+    
     vistos.append(capitulo)
 
     #inicio del contador para reproduccion automatica
-    inp = None
-            
-    for i in range(TIEMPO_ESPERA,0,-1):
-        if msvcrt.kbhit():
-            inp = msvcrt.getch()
-            break
-        print 'Finalizado el siguiente capitulo empezara en %d sec, presiona enter para parar: \r' % i,
-        sys.stdout.flush()
-        time.sleep(1)
-
-    if not inp:
-        print 'Finalizado el siguiente capitulo empezara en 0 sec, presiona enter para parar: '
+    if not counter(TIEMPO_ESPERA, 'Finalizado el siguiente capitulo empezara en'):
         cap += 1
         continue
     
     #comprobacion de si se quieren eliminar los archivos una vez vistos
     if len(vistos) == 1:
         if capitulo not in delSchedule:
-            print("\nQuieres eliminar el archivo? (se eliminaran al final)[S/s]")
+            print("Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
             delete = str(raw_input()) 
             if delete == "S" or delete == "s":
                 #se aniade el archivo al array para borrarlo despues
                 delSchedule.append(capitulo)
         else:
-            print("\nQuieres evitar la eliminacion del archivo?[S/s]")
+            print("Quieres evitar la eliminacion del archivo?[S/s]")
             delete = str(raw_input()) 
             if delete == "S" or delete == "s":
                 #se quita el archivo al array para no borrarlo despues
@@ -181,14 +198,13 @@ while continua:
     else:
         eliminar = int(impArray(DEL_INI,DEL_FIN,DEL_ARRAY))
         
-        #eliminar todos
-        if eliminar == 1:            
-            delSchedule = list(set(delSchedule)|set(vistos))
         #eliminar todos menos el ultimo
-        elif eliminar == 2:
-            delSchedule = list(set(delSchedule)|set(vistos[0:-1]))
+        if eliminar == 2:
+            print 'eliminacion planificada'
+            vistos = vistos[0:-1]
         #elegir los que eliminar
         elif eliminar == 3:
+            print 'eliminacion planificada'
             elementos = impArray(SELD_INI,SELD_FIN,vistos[1:],[vistos[0]])
             if type(elementos) is tuple:
                 vistosAux = vistos
@@ -197,10 +213,14 @@ while continua:
                     vistos.append(vistosAux[element])
             else:
                 vistos = [vistos[elementos]]
-            delSchedule = list(set(delSchedule)|set(vistos))
+        #no se elimina nada o se eliminan todos
+        elif eliminar != 1:
+            print 'no se eliminra nada'
+            vistos = []
 
-    vistos = []
-    
+        delSchedule = list(set(delSchedule)|set(vistos))  
+
+    vistos = []  
     
 
     #segunda tanda de opciones ha realizar
@@ -208,6 +228,7 @@ while continua:
                 "Anterior cap  -> " + (caps[cap-1] if cap > 0 else caps[cap]),
                 "Elegir cap",
                 "Cambiar serie",
+                "Ultimo y apaga",
                 "Salir"]
     
 
@@ -220,8 +241,10 @@ while continua:
     elif accion == 2:
         if not cap > 0:
             cap -= 1
+    #elegir capitulo
     elif accion == 3:
-        cap = int(impArray(CAP_INI, CAP_FIN, caps)) - 1        
+        cap = int(impArray(CAP_INI, CAP_FIN, caps)) - 1
+    #Cambiar de serie
     elif accion == 4:
         #se eliminaran los capitulos planificados
         eliminarCaps(delSchedule,seriePath)
@@ -236,7 +259,14 @@ while continua:
         #caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
         #y se actualizara solo cuando se llame a cambiar serie
         (seriePath, caps) = comprobarTemporada(join(seriesPath,series[serie]))
+    #Ultimo capitulo y apagar el ordenador
     elif accion == 5:
+        print "Se apagara el ordenador despues de reproducir el capitulo, si se desea anular tendra 5 segundos tras finalizar el capitulo, antes de apagar se borraran todos los capitulos planificados y se mantendra el ultimo"
+        time.sleep(2)
+        cap += 1
+        apagar = True
+    #Salir del programa
+    elif accion == 6:
         continua = False
 
 #Se eliminaran los capitulos planificados
