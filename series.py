@@ -235,11 +235,11 @@ while continua:
     accion = int(impArray(ACC_INI,ACC_FIN,acciones))
     #siguiente capitulo
     if accion == 1:
-        if not cap < len(caps):
+        if cap < len(caps):
             cap += 1
     #anterior capitulo
     elif accion == 2:
-        if not cap > 0:
+        if cap > 0:
             cap -= 1
     #elegir capitulo
     elif accion == 3:
