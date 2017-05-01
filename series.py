@@ -1,7 +1,6 @@
-from os import listdir, system, remove, rmdir
+from os import listdir, system, remove, rmdir, chdir
 from os.path import isdir, join
-import subprocess
-import sys
+import subprocess, sys, thread, time, msvcrt
 
 #################################################################################################################
 #	Autor: Ismael Ortega				Email: ismaelortegasanchez@hotmail.com			#
@@ -141,6 +140,10 @@ if len(sys.argv) < 2:
 else:
     serie = int(sys.argv[1]) - 1
 
+apagar = serie<-1;
+if apagar:
+    serie = abs(serie + 2)
+
 comprobarAperturaCarpeta(serie)
 
 #consigo que seriePath apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
@@ -159,7 +162,6 @@ vistos = []
 delSchedule = []
 
 #booleana por si se quiere apagar el ordena
-apagar = False
 
 
 while continua:
