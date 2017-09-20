@@ -89,13 +89,16 @@ def comprobarAperturaCarpeta(serie):
 #Este metodo se encarda de comprobar si hay temporadas y dar a elegir cual quieres ver
 def comprobarTemporada(seriePath):
     elementos = listdir(seriePath)
+    auxPath = seriePath;
     if isdir(join(seriePath,elementos[0])):
         temp = int(impArray(TEMP_INI,TEMP_FIN,elementos)) - 1
         seriePath = join(seriePath,elementos[temp])
-        elementos = listdir(seriePath)    
-    return (seriePath,elementos)
+        elementos = listdir(seriePath)
+    else:
+        auxPath = None
+    return (seriePath,elementos,auxPath)
 
-def eliminarCaps(delSchedule,serePath):
+def eliminarCaps(delSchedule,seriePath, auxPath):
     #for que se encarga de borrar los archivos que indica el array delSchedule
     if len(delSchedule) > 0:
         print "Se van a eliminar los archivos planificados"
@@ -107,6 +110,10 @@ def eliminarCaps(delSchedule,serePath):
             print "No quedan capitulos eliminando carpeta..."
             time.sleep(1)
             rmdir(seriePath)
+            if auxPath is not None and len(listdir(auxPath)) == 0:
+                print "No quedan temporadas eliminando carpeta..."
+                time.sleep(1)
+                rmdir(auxPath)
 
 #hilo para leer si se quiere cortar la reproduccion automatica
 def input_thread(L):
@@ -149,7 +156,7 @@ comprobarAperturaCarpeta(serie)
 #consigo que seriePath apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
 #caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas al sistema
 #y se actualizara solo cuando se llame a cambiar serie
-(seriePath, caps) = comprobarTemporada(join(seriesPath,series[serie]))
+(seriePath, caps, auxPath) = comprobarTemporada(join(seriesPath,series[serie]))
 
 #while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
 continua = True
@@ -179,9 +186,11 @@ while continua:
     vistos.append(capitulo)
 
     #inicio del contador para reproduccion automatica
-    if not counter(TIEMPO_ESPERA, 'Finalizado el siguiente capitulo empezara en'):
+    if cap+1<len(caps) and not counter(TIEMPO_ESPERA, 'Finalizado el siguiente capitulo empezara en'):
         cap += 1
         continue
+    elif cap+1==len(caps):
+        print 'No quedan mas capitulos'
     
     #comprobacion de si se quieren eliminar los archivos una vez vistos
     if len(vistos) == 1:
@@ -237,7 +246,7 @@ while continua:
     accion = int(impArray(ACC_INI,ACC_FIN,acciones))
     #siguiente capitulo
     if accion == 1:
-        if cap < len(caps):
+        if cap < len(caps)-1:
             cap += 1
     #anterior capitulo
     elif accion == 2:
@@ -249,7 +258,7 @@ while continua:
     #Cambiar de serie
     elif accion == 4:
         #se eliminaran los capitulos planificados
-        eliminarCaps(delSchedule,seriePath)
+        eliminarCaps(delSchedule,seriePath,auxPath)
         delSchedule = []
         #se actualiza las series disponibles
         series = [fichero for fichero in listdir(seriesPath)
@@ -272,6 +281,6 @@ while continua:
         continua = False
 
 #Se eliminaran los capitulos planificados
-eliminarCaps(delSchedule,seriePath)
+eliminarCaps(delSchedule,seriePath,auxPath)
 print("BYE")
 time.sleep(1)
