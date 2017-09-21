@@ -178,7 +178,7 @@ while continua:
 
     if apagar:
         if not counter(10, 'El ordenador se apagara en'):
-            eliminarCaps(delSchedule,seriePath)
+            eliminarCaps(delSchedule,seriePath,auxPath)
             subprocess.call("shutdown -s -t 0")
         else:
             apagar = False
