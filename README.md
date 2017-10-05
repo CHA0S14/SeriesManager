@@ -15,3 +15,5 @@ Este script mostrara todas las series(carpetas) en la carpeta y te dara a elegir
   Muy sencillo, este script esta creado por mi vagueria suprema y quiero poner el primer cap lo antes posible sin opciones inecesarias, si    no quiero ese cap cosa que es menos comun pues cierro el video y voy a esa opcion
   
 Espero que lo disfruteis
+
+P.D. No hay controles de imput y da error si metes algo que no vale, es lo proximo que voy ha hacer, ¿Por que no he hecho algo tan importante? Bueno este proyecto lo cree por vago y para entrenar python y nunca pretendi que creciera mas alla de dejame elegir serie y reproduce, pero lo ha hecho, como solo era para practicar esos controles que tengo tan trillados de otros proyectos me daba pereza hacerlos, pero ahora pienso que ha crecido bastante y es una version bastante estable de la aplicacion sin errores que haya visto (que seguro que hay, siempre hay, malditos seais bugs, sabeis esconderos muy bien) y deberia de hacerlo
