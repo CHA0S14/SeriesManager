@@ -3,9 +3,9 @@ from os.path import isdir, join
 import subprocess, sys, thread, time, msvcrt
 
 #################################################################################################################
-#	Autor: Ismael Ortega				Email: ismaelortegasanchez@hotmail.com			#
-#														#
-#		LEE EL README DE GITHUB ANTES DE USAR:	https://github.com/CHA0S14/SeriesManager.git		#
+#	        Autor: Ismael Ortega				Email: ismaelortegasanchez@hotmail.com			                #
+#														                                                        #
+#		LEE EL README DE GITHUB ANTES DE USAR:	https://github.com/CHA0S14/SeriesManager.git		            #
 #################################################################################################################
 
 #####################
@@ -13,9 +13,9 @@ import subprocess, sys, thread, time, msvcrt
 #####################
 
 #Ruta a la carpeta con las series
-seriesPath = r"<path a series>"
+seriesPath = r"D:\Owncloud\Series"
 #ruta al programa con el que quieres reproducir
-reproductor = r"<path a reproductor>"
+reproductor = r"D:\Programas\VLC\vlc.exe"
 #Recorro la carpeta de series y creo un array con las carpetas de dentro simbolizando cada una una serie distinta
 series = [
         fichero for fichero in listdir(seriesPath)
