@@ -60,7 +60,6 @@ SELD_FIN = 'Escribe el numero de los caps separados con coma'
 #   FUNCIONES       #
 #####################
 
-
 def imprimir_array_mensajes(mensaje_ini, mensaje_fin, array, opcion_adicional=None):
     """ Recorre un array con las opciones para que el usuario tome una decision """
     print mensaje_ini
