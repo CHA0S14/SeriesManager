@@ -60,15 +60,17 @@ SELD_FIN = 'Escribe el numero de los caps separados con coma'
 #   FUNCIONES       #
 #####################
 
+
 def imprimir_array_mensajes(mensaje_ini, mensaje_fin, array, opcion_adicional=None):
     """ Recorre un array con las opciones para que el usuario tome una decision """
     print mensaje_ini
 
     # recorre las opciones adicionales que van a parte del array de series o capitulos
     cont = 0
-    for opcion in opcion_adicional:
-        print "\t" + str(cont) + ". " + opcion
-        cont = cont + 1
+    if opcion_adicional is not None:
+        for opcion in opcion_adicional:
+            print "\t" + str(cont) + ". " + opcion
+            cont = cont + 1
 
     # recorre el array con las series o capitulos
     cont = 1 if cont == 0 else cont
@@ -173,7 +175,7 @@ def main():
     comprobar_apertura_carpeta(serie)
 
     # hago que serie_path apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
-    # caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas 
+    # caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas
     # al sistema y se actualizara solo cuando se llame a cambiar serie
     (serie_path, caps, path_auxiliar) = obtener_temporadas(
         join(SERIES_PATH, series[serie]))
@@ -200,13 +202,15 @@ def main():
                                    serie_path, path_auxiliar)
                 subprocess.call("shutdown -s -t 0")
             else:
+                # TODO Preguntar si se quiere apagar despues del siguiente capitulo
                 apagar = False
 
         vistos.append(capitulo)
 
         # inicio del contador para reproduccion automatica
-        if cap + 1 < len(caps) and not counter(TIEMPO_ESPERA, 'Finalizado "\
-        "el siguiente capitulo empezara en'):
+        if cap + 1 < len(caps) and not counter(TIEMPO_ESPERA, ('Finalizado ' +
+                                                               'el siguiente capitulo empezara'+
+                                                               ' en')):
             cap += 1
             continue
         elif cap + 1 == len(caps):
