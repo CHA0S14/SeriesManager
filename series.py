@@ -12,17 +12,15 @@ import msvcrt
 #############################################################################################
 
 #####################
-#VARIABLES GLOBALES #
-#####################
-
-# Ruta a la carpeta con las series
-SERIES_PATH = r"D:\Owncloud\Series"
-# ruta al programa con el que quieres reproducir
-REPRODUCTOR = r"D:\Programas\VLC\vlc.exe"
-
-#####################
 #     Constantes    #
 #####################
+
+# TODO Las dos siguiente constantes van a desaparecer
+# Ruta a la carpeta con las series
+SERIES_PATH = r"D:\Owncloud\Series"
+
+# ruta al programa con el que quieres reproducir
+REPRODUCTOR = r"D:\Programas\VLC\vlc.exe"
 
 # Tiempo de espera al siguiente cap
 TIEMPO_ESPERA = 5
@@ -143,43 +141,8 @@ def counter(tiempo, mensaje):
         print ''
     return inp
 
-
-#####################
-#       INICIO      #
-#####################
-
-def main():
-
-    #####################
-    #     Variables     #
-    #####################
-
-    # Recorro la carpeta de series y creo un array con las carpetas de dentro
-    series = [fichero for fichero in listdir(SERIES_PATH)
-              if isdir(join(SERIES_PATH, fichero))]
-
-    #####################
-    #     INICIO COD    #
-    #####################
-
-    if len(sys.argv) < 2:
-        serie = int(imprimir_array_mensajes(
-            SERIE_INI, SERIE_FIN, series, SERIE_ADD)) - 1
-    else:
-        serie = int(sys.argv[1]) - 1
-
-    apagar = serie < -1
-    if apagar:
-        serie = abs(serie + 2)
-
-    comprobar_apertura_carpeta(serie)
-
-    # hago que serie_path apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
-    # caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas
-    # al sistema y se actualizara solo cuando se llame a cambiar serie
-    (serie_path, caps, path_auxiliar) = obtener_temporadas(
-        join(SERIES_PATH, series[serie]))
-
+# TODO Simplifica este bucle para que no te sangren los ojos
+def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
     # while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
     continua = True
     cap = 0
@@ -209,7 +172,7 @@ def main():
 
         # inicio del contador para reproduccion automatica
         if cap + 1 < len(caps) and not counter(TIEMPO_ESPERA, ('Finalizado ' +
-                                                               'el siguiente capitulo empezara'+
+                                                               'el siguiente capitulo empezara' +
                                                                ' en')):
             cap += 1
             continue
@@ -310,9 +273,53 @@ def main():
         # Salir del programa
         elif accion == 6:
             continua = False
+    return eliminaciones_programadas
+
+
+#####################
+#       INICIO      #
+#####################
+
+def main():
+    """ Funcion principal del programa """
+    #####################
+    #     Variables     #
+    #####################
+
+    # Recorro la carpeta de series y creo un array con las carpetas de dentro
+    series = [fichero for fichero in listdir(SERIES_PATH)
+              if isdir(join(SERIES_PATH, fichero))]
+
+    #####################
+    #     INICIO COD    #
+    #####################
+
+    # TODO Utiliza los argumentos mejor, que te pasen el reproductor y la
+    # serie por parametros o por variable de entorno
+    if len(sys.argv) < 2:
+        serie = int(imprimir_array_mensajes(
+            SERIE_INI, SERIE_FIN, series, SERIE_ADD)) - 1
+    else:
+        serie = int(sys.argv[1]) - 1
+
+    apagar = serie < -1
+    if apagar:
+        serie = abs(serie + 2)
+
+    comprobar_apertura_carpeta(serie)
+
+    # hago que serie_path apunte a la carpeta de la serie a ver y si hay temporadas elegir cual
+    # caps tiene todos los capitulos de una serie, esta fuera del while para reducir llamadas
+    # al sistema y se actualizara solo cuando se llame a cambiar serie
+    (serie_path, caps, path_auxiliar) = obtener_temporadas(
+        join(SERIES_PATH, series[serie]))
+
+    # Inicio el bucle principal del programa
+    caitulos_eliminar = bucle_reproduccion(
+        serie_path, caps, path_auxiliar, apagar)
 
     # Se eliminaran los capitulos planificados
-    eliminar_capitulos(eliminaciones_programadas, serie_path, path_auxiliar)
+    eliminar_capitulos(caitulos_eliminar, serie_path, path_auxiliar)
     print "BYE"
     time.sleep(1)
 
