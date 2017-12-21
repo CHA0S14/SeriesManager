@@ -1,15 +1,15 @@
+"""
+            Autor: Ismael Ortega			Email: ismaelortegasanchez@hotmail.com
+
+    LEE EL README DE GITHUB ANTES DE USAR:	https://github.com/CHA0S14/SeriesManager.git
+"""
+
 from os import listdir, system, remove, rmdir
 from os.path import isdir, join
 import subprocess
 import sys
 import time
 import msvcrt
-
-#############################################################################################
-#	        Autor: Ismael Ortega			Email: ismaelortegasanchez@hotmail.com		    #
-#														                                    #
-#	LEE EL README DE GITHUB ANTES DE USAR:	https://github.com/CHA0S14/SeriesManager.git    #
-#############################################################################################
 
 #####################
 #     Constantes    #
@@ -280,6 +280,7 @@ def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
 #       INICIO      #
 #####################
 
+# TODO Pensar todo esto de nuevo para cambiar el directorio del proceso en vez de tener que usar rutas completas
 def main():
     """ Funcion principal del programa """
     #####################
