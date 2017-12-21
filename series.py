@@ -142,6 +142,8 @@ def counter(tiempo, mensaje):
     return inp
 
 # TODO Simplifica este bucle para que no te sangren los ojos
+
+
 def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
     # while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
     continua = True
