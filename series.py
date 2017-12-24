@@ -20,7 +20,7 @@ import msvcrt
 SERIES_PATH = r"D:\Owncloud\Series"
 
 # ruta al programa con el que quieres reproducir
-REPRODUCTOR = r"D:\Programas\VLC\vlc.exe"
+REPRODUCTOR = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
 
 # Tiempo de espera al siguiente cap
 TIEMPO_ESPERA = 5
