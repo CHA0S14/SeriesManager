@@ -61,22 +61,22 @@ SELD_FIN = 'Escribe el numero de los caps separados con coma'
 
 def imprimir_array_mensajes(mensaje_ini, mensaje_fin, array, opcion_adicional=None):
     """ Recorre un array con las opciones para que el usuario tome una decision """
-    print mensaje_ini
+    print(mensaje_ini)
 
     # recorre las opciones adicionales que van a parte del array de series o capitulos
     cont = 0
     if opcion_adicional is not None:
         for opcion in opcion_adicional:
-            print "\t" + str(cont) + ". " + opcion
+            print("\t" + str(cont) + ". " + opcion)
             cont = cont + 1
 
     # recorre el array con las series o capitulos
     cont = 1 if cont == 0 else cont
     for elem in array:
-        print "\t" + str(cont) + ". " + elem
+        print("\t" + str(cont) + ". " + elem)
         cont = cont + 1
 
-    print mensaje_fin
+    print(mensaje_fin)
     return input()
 
 
@@ -109,17 +109,17 @@ def eliminar_capitulos(eliminaciones_programadas, serie_path, path_auxiliar):
     """ Metodo que se encarga de borrar los archivos que indica el array
     eliminaciones_programadas """
     if eliminaciones_programadas:
-        print "Se van a eliminar los archivos planificados"
+        print("Se van a eliminar los archivos planificados")
         for archivo in eliminaciones_programadas:
-            print "eliminadno " + archivo + "..."
+            print("eliminadno " + archivo + "...")
             time.sleep(0.5)
             remove(archivo)
         if not listdir(serie_path):
-            print "No quedan capitulos eliminando carpeta..."
+            print("No quedan capitulos eliminando carpeta...")
             time.sleep(1)
             rmdir(serie_path)
             if path_auxiliar is not None and not listdir(path_auxiliar):
-                print "No quedan temporadas eliminando carpeta..."
+                print("No quedan temporadas eliminando carpeta...")
                 time.sleep(1)
                 rmdir(path_auxiliar)
 
@@ -131,14 +131,14 @@ def counter(tiempo, mensaje):
         if msvcrt.kbhit():
             inp = msvcrt.getch()
             break
-        print mensaje + ' %d sec, presiona algo para parar: \r' % i,
+        print(mensaje + ' %d sec, presiona algo para parar: \r' % i,)
         sys.stdout.flush()
         time.sleep(1)
     if not inp:
-        print mensaje + ' 0 sec:                             '
+        print(mensaje + ' 0 sec:                             ')
     else:
         # con estre print evito superposiciones de texto
-        print ''
+        print('')
     return inp
 
 # TODO Simplifica este bucle para que no te sangren los ojos
@@ -158,7 +158,8 @@ def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
     # booleana por si se quiere apagar el ordena
     while continua:
         capitulo = join(serie_path, caps[cap])
-        print "Reproduciendo " + caps[cap] + "..."
+        print("Reproduciendo " + caps[cap] + "...")
+        # TODO Mirar si puedo poner el argumento en la variable de estado o que pasaria si utiliza otro programa de reproduccion
         subprocess.call([REPRODUCTOR, '--fullscreen', capitulo])
 
         if apagar:
@@ -179,19 +180,20 @@ def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
             cap += 1
             continue
         elif cap + 1 == len(caps):
-            print 'No quedan mas capitulos'
+            print('No quedan mas capitulos')
 
         # comprobacion de si se quieren eliminar los archivos una vez vistos
         if len(vistos) == 1:
             if capitulo not in eliminaciones_programadas:
-                print "Quieres eliminar el archivo? (se eliminaran al final)[S/s]"
-                delete = str(raw_input())
+                print(
+                    "Quieres eliminar el archivo? (se eliminaran al final)[S/s]")
+                delete = str(input())
                 if delete == "S" or delete == "s":
                     # se aniade el archivo al array para borrarlo despues
                     eliminaciones_programadas.append(capitulo)
             else:
-                print "Quieres evitar la eliminacion del archivo?[S/s]"
-                delete = str(raw_input())
+                print("Quieres evitar la eliminacion del archivo?[S/s]")
+                delete = str(input())
                 if delete == "S" or delete == "s":
                     # se quita el archivo al array para no borrarlo despues
                     eliminaciones_programadas.remove(capitulo)
@@ -201,11 +203,11 @@ def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
 
             # eliminar todos menos el ultimo
             if eliminar == 2:
-                print 'eliminacion planificada'
+                print('eliminacion planificada')
                 vistos = vistos[0:-1]
             # elegir los que eliminar
             elif eliminar == 3:
-                print 'eliminacion planificada'
+                print('eliminacion planificada')
                 elementos = imprimir_array_mensajes(
                     SELD_INI, SELD_FIN, vistos[1:], [vistos[0]])
                 if isinstance(elementos, tuple):
@@ -217,7 +219,7 @@ def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
                     vistos = [vistos[elementos]]
             # no se elimina nada o se eliminan todos
             elif eliminar != 1:
-                print 'no se eliminra nada'
+                print('no se eliminra nada')
                 vistos = []
 
             eliminaciones_programadas = list(
@@ -266,9 +268,9 @@ def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
                 join(SERIES_PATH, series[serie]), True)
         # Ultimo capitulo y apagar el ordenador
         elif accion == 5:
-            print "Se apagara el ordenador despues de reproducir el capitulo, si se desea anular" \
-                " tendra 5 segundos tras finalizar el capitulo, antes de apagar se borraran" \
-                " todos los capitulos planificados y se mantendra el ultimo"
+            print("Se apagara el ordenador despues de reproducir el capitulo, si se desea anular"
+                  " tendra 5 segundos tras finalizar el capitulo, antes de apagar se borraran"
+                  " todos los capitulos planificados y se mantendra el ultimo")
             time.sleep(2)
             cap += 1
             apagar = True
@@ -323,7 +325,7 @@ def main():
 
     # Se eliminaran los capitulos planificados
     eliminar_capitulos(caitulos_eliminar, serie_path, path_auxiliar)
-    print "BYE"
+    print("BYE")
     time.sleep(1)
 
 
