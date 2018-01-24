@@ -123,7 +123,7 @@ def eliminar_capitulos(eliminaciones_programadas, serie_path, path_auxiliar):
                 time.sleep(1)
                 rmdir(path_auxiliar)
 
-
+#TODO intentar hacerlo con Threads
 def counter(tiempo, mensaje):
     """ Contador que si no se detiene devuelve None si se detiene devuelve otra cosa"""
     inp = None
@@ -131,8 +131,7 @@ def counter(tiempo, mensaje):
         if msvcrt.kbhit():
             inp = msvcrt.getch()
             break
-        print(mensaje + ' %d sec, presiona algo para parar: \r' % i,)
-        sys.stdout.flush()
+        print(mensaje + ' %d sec, presiona algo para parar:' % i, end='\r')
         time.sleep(1)
     if not inp:
         print(mensaje + ' 0 sec:                             ')
@@ -142,8 +141,6 @@ def counter(tiempo, mensaje):
     return inp
 
 # TODO Simplifica este bucle para que no te sangren los ojos
-
-
 def bucle_reproduccion(serie_path, caps, path_auxiliar, apagar=False):
     # while que se encarga de preguntar que quieres hacer al acabar de ver el capitulo
     continua = True
